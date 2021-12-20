@@ -5,8 +5,8 @@ import time
 
 from request import save_inclusion_result
 
-# Constants
-DDD = 0.001
+# Global Constants
+# DDD = 0.01
 RHO = 10
 EXIT_IDX = 3
 
@@ -88,24 +88,24 @@ def iteration(site, rates, holding_rate):
 #             break
 
 
-def calc_rates(site):
+def calc_rates(site, ddd):
     [x, y, z, w] = site
 
     rates = [
-        RHO * (x + DDD),
-        x * (RHO + DDD),
-        x * (y + DDD),
-        y * (x + DDD),
-        y * (z + DDD),
-        z * (y + DDD),
-        z * (w + DDD),
-        w * (z + DDD),
+        RHO * (x + ddd),
+        x * (RHO + ddd),
+        x * (y + ddd),
+        y * (x + ddd),
+        y * (z + ddd),
+        z * (y + ddd),
+        z * (w + ddd),
+        w * (z + ddd),
     ]
 
     return rates, sum(rates)
 
 
-def main(verbose, memo, save):
+def main(verbose, memo, save, ddd):
     if EXIT_IDX not in [1, 2, 3]:
         raise "EXIT_IDX should be one of 1, 2, 3"
 
@@ -120,7 +120,7 @@ def main(verbose, memo, save):
         if verbose and not (index % verbose):
             print(f'[{index}, {"{:.3f}".format(timer)}]: {site}')
 
-        rates, holding_rate = calc_rates(site)
+        rates, holding_rate = calc_rates(site, ddd)
         iteration(site, rates, holding_rate)
 
         index += 1
@@ -130,15 +130,13 @@ def main(verbose, memo, save):
     elapsed = end_time - start_time
 
     print(f'[{index}, {"{:.3f}".format(timer)}]: {site}')
-    print(f"[D: {DDD}, RHO: {RHO}, index: {index}, timer: {timer}, site: {site}")
+    print(f"[D: {ddd}, RHO: {RHO}, index: {index}, timer: {timer}, site: {site}")
     print(f'elapsed: {"{:.2f}".format(elapsed)} seconds')
     print(f"perf: {round(index / elapsed, 2)} /s")
 
     if save:
         print("saving results to database...")
-        _id = save_inclusion_result(
-            site, index, timer, start_time, end_time, DDD, RHO, memo=memo
-        )
+        _id = save_inclusion_result(site, EXIT_IDX, index, timer, start_time, end_time, ddd, RHO, memo=memo)
         print(f"result saved to MongoDB. _id: {_id}")
 
 
@@ -148,6 +146,7 @@ if __name__ == "__main__":
     parser.add_argument("--memo", "-m", type=str, default="")
     parser.add_argument("--save", action="store_true", default=False)
     parser.add_argument("--iterate", "-i", type=int, default=None)
+    parser.add_argument("--ddd", "-d", type=float, default=0.01)
     args = vars(parser.parse_args())
 
     iterate = args.pop("iterate")

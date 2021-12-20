@@ -4,10 +4,10 @@ install:
 	pip3 install -r ./requirements.txt
 
 start:
-	python3 ./main.py --save -m ${MEMO}
+	python3 ./main.py --save --memo ${MEMO}
 
 iterate-10:
-	python3 ./main.py --save -i 10 -m ${MEMO}
+	python3 ./main.py --save --iterate 10 --memo ${MEMO}
 
 dev:
-	python3 ./main.py --verbose 10000
+	python3 ./main.py -v 100000 --save

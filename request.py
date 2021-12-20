@@ -16,6 +16,7 @@ COLLECTION_NAME = "inclusion"
 
 def save_inclusion_result(
     site: List[int],
+    exit_index: int,
     index: int,
     timer: float,
     start_time: float,
@@ -34,6 +35,7 @@ def save_inclusion_result(
         "collection": COLLECTION_NAME,
         "document": {
             "site": site,
+            "exit_index": exit_index,
             "index": index,
             "timer": timer,
             "DDD": DDD,
