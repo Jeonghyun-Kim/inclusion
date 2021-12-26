@@ -1,3 +1,5 @@
 requests
 python-dotenv
 argparse
+pymongo
+pymongo[srv]

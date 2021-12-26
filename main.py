@@ -3,12 +3,13 @@ import datetime
 import random
 import time
 
-from request import save_inclusion_result
+# from request import save_inclusion_result
+from mongodb import MongoDB, save_mongo
 
 # Global Constants
 # DDD = 0.01
 RHO = 10
-EXIT_IDX = 3
+EXIT_IDX = 2
 
 
 def iteration(site, rates, holding_rate):
@@ -116,6 +117,8 @@ def main(verbose, memo, save, ddd):
     index = 0
     timer = 0
 
+    mongo = MongoDB()
+
     while site[EXIT_IDX] < 1:
         if verbose and not (index % verbose):
             print(f'[{index}, {"{:.3f}".format(timer)}]: {site}')
@@ -136,7 +139,13 @@ def main(verbose, memo, save, ddd):
 
     if save:
         print("saving results to database...")
-        _id = save_inclusion_result(site, EXIT_IDX, index, timer, start_time, end_time, ddd, RHO, memo=memo)
+
+        save_start = time.time()
+        # _id = save_inclusion_result(site, EXIT_IDX, index, timer, start_time, end_time, ddd, RHO, memo=memo)
+        _id = save_mongo(mongo, site, EXIT_IDX, index, timer, start_time, end_time, ddd, RHO, memo=memo)
+        save_end = time.time()
+        save_elapsed = save_end - save_start
+        print(f'save elapsed: {"{:.2f}".format(save_elapsed)} seconds')
         print(f"result saved to MongoDB. _id: {_id}")
 
 
